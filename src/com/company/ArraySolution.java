@@ -161,4 +161,39 @@ public class ArraySolution {
         if (a[low] == tar) return low;
         return a[high] == tar ? high : -1;
     }
+
+
+    /**Given an array with integers, find two indices i and j  (j>=i),  such that the value of A[i]+A[j]+ (j - i) is maximized.
+
+     Return (i, j).
+
+     Assumptions:
+
+     The given array is not null and it has length of > 0.
+     Examples:
+
+     array = {1, 5, 3}, the max sum is array[1] + array[1] + (1 - 1) = 10, return {1, 1}*/
+    public int[] maxSum(int[] array) {
+        // Write your solution here.
+        int[] out = new int[2];
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < array.length; i++) {
+            int sum = array[i] + array[i];
+            if (sum > max) {
+                out[0] = i;
+                out[1] = i;
+                max = sum;
+            }
+            for (int j = i + 1; j < array.length; j++) {
+                int val = array[i] + array[j] + (j - i);
+                if (val > max) {
+                    out[0] = i;
+                    out[1] = j;
+                    max = val;
+                }
+            }
+        }
+
+        return out;
+    }
 }
