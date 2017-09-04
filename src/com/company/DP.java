@@ -104,4 +104,44 @@ public class DP {
         return maxProf;
     }
 
+
+    /** cutting wood
+     *
+     * There is a wooden stick with length L >= 1, we need to cut it into pieces, where the cutting positions are defined in an int array A. The positions are guaranteed to be in ascending order in the range of [1, L - 1]. The cost of each cut is the length of the stick segment being cut. Determine the minimum total cost to cut the stick into the defined pieces.
+
+     Examples
+
+     L = 10, A = {2, 4, 7}, the minimum total cost is 10 + 4 + 6 = 20 (cut at 4 first then cut at 2 and cut at 7)
+     * */
+    public int minCost(int[] cuts, int length) {
+        // Write your solution here.
+        if (cuts == null || cuts.length <= 1) {
+            return length;
+        }
+
+        int[] dp = new int[cuts.length + 2];
+        dp[0] = 0;
+        dp[dp.length - 1] = length;
+        for (int i = 0; i < cuts.length; i++) {
+            dp[i + 1] = cuts[i];
+        }
+
+        int[][] mincost = new int[dp.length][dp.length];
+        for (int i = 1; i < dp.length;i++) {
+            for(int j = i - 1; j >= 0; j--) {
+                if (j + 1 == i) {
+                    mincost[j][i] = 0;
+                } else {
+                    mincost[j][i] = Integer.MAX_VALUE;
+                    for (int k = j + 1;k <= i; k++) {
+                        mincost[j][i] = Math.min(mincost[j][i],mincost[j][k] + mincost[k][i]);
+                    }
+                    mincost[j][i] += dp[i] - dp[j];
+                }
+            }
+        }
+        return mincost[0][dp.length - 1];
+    }
+
+
 }
