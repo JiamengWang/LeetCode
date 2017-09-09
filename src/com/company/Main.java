@@ -13,13 +13,15 @@ public class Main {
         int[] c = {10,8,3,0};
         int[] d = {1,4,4,8,14};
 
+        String s1 = "babad";
         String[] input = {"aaa","bbb"};
 //        Sort sort = new Sort();
 //        DP dp = new DP();
-        Recursion re = new Recursion();
-        ArraySolution ar = new ArraySolution();
+//        Recursion re = new Recursion();
+//        ArraySolution ar = new ArraySolution();
+        StringSolution ss = new StringSolution();
 
-        System.out.println(Arrays.toString(ar.maxSum(c)));
-//        System.out.println(re.formRing(input));
+//        System.out.println(Arrays.toString(ar.maxSum(c)));
+        System.out.println(ss.longestPalindrome(s1));
     }
 }
