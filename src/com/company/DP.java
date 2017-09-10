@@ -1,5 +1,5 @@
 package com.company;
-
+import java.util.*;
 /**
  * Created by wjm-harry on 8/26/17.
  */
@@ -143,5 +143,297 @@ public class DP {
         return mincost[0][dp.length - 1];
     }
 
+    /**Follow up for "Unique Paths":
+
+     Now consider if some obstacles are added to the grids. How many unique paths would there be?
+
+     An obstacle and empty space is marked as 1 and 0 respectively in the grid.
+
+     For example,
+     There is one obstacle in the middle of a 3x3 grid as illustrated below.
+
+     [
+     [0,0,0],
+     [0,1,0],
+     [0,0,0]
+     ]
+     The total number of unique paths is 2.
+     * */
+    public int uniquePathsWithObstacles(int[][] obstacleGrid) {
+        if (obstacleGrid == null) {
+            return 0;
+        }
+
+        int x = obstacleGrid.length;
+        if (x == 0) {
+            return 0;
+        }
+
+        int y = obstacleGrid[0].length;
+        if (y == 0) {
+            return 0;
+        }
+
+        int[][] dp = new int[x][y];
+
+        for (int i = x - 1; i >= 0; i--) {
+
+            for (int j = y - 1; j >= 0;j--) {
+                if (obstacleGrid[i][j] == 1) {
+                    continue;
+                }
+                if (i == x - 1 && j < y - 1) {
+                    dp[i][j] = dp[i][j + 1];
+                } else if (j == y - 1 && i < x - 1) {
+                    dp[i][j] = dp[i + 1][j];
+                } else if (i < x - 1 && j < y - 1) {
+                    dp[i][j] = dp[i + 1][j] + dp[i][j + 1];
+                } else {
+                    dp[i][j] = 1;
+                }
+            }
+        }
+        return dp[0][0];
+    }
+
+    /**You are climbing a stair case. It takes n steps to reach to the top.
+
+     Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+     Note: Given n will be a positive integer.
+
+     */
+
+    // this is another fibonicca question
+    public int climbStairs(int n) {
+        if (n == 0) {
+            return 0;
+        }
+        if (n == 1) {
+            return 1;
+        }
+
+        int prev = 1;
+        int cur = 1;
+
+        while (n > 1) {
+            int sum = prev + cur;
+            prev = cur;
+            cur = sum;
+            n--;
+        }
+        return cur;
+    }
+
+    /**Given two words word1 and word2, find the minimum number of steps required to convert word1 to word2. (each operation is counted as 1 step.)
+
+     You have the following 3 operations permitted on a word:
+
+     a) Insert a character
+     b) Delete a character
+     c) Replace a character
+     */
+
+    public int minDistance(String word1, String word2) {
+        if (word1 == null || word2 == null) {
+            return 0;
+        }
+        int len1 = word1.length();
+        int len2 = word2.length();
+
+        if (len1 == 0 || len2 == 0) {
+            return len1 == 0 ? len2 : len1;
+        }
+
+        int[][] dp = new int[len1 + 1][len2 + 1];
+        for (int i= 0; i < len1 + 1; i++) {
+            for (int j = 0; j < len2 + 1; j++) {
+
+                if (i == 0 && j > 0) {
+                    dp[i][j] = dp[i][j - 1] + 1;
+                } else if (j == 0 && i > 0) {
+                    dp[i][j] = dp[i - 1][j] + 1;
+                } else if (i > 0 && j > 0) {
+                    char c1 = word1.charAt(i - 1);
+                    char c2 = word2.charAt(j - 1);
+                    if (c1 == c2) {
+                        dp[i][j] = dp[i - 1][j - 1];
+                    } else {
+                        dp[i][j] = Math.min(dp[i][j - 1],Math.min(dp[i - 1][j - 1],dp[i -1][j])) + 1;
+                    }
+                }
+            }
+        }
+        return dp[len1][len2];
+    }
+
+    /**Given a triangle, find the minimum path sum from top to bottom. Each step you may move to adjacent numbers on the row below.
+
+     For example, given the following triangle
+     [
+     [2],
+     [3,4],
+     [6,5,7],
+     [4,1,8,3]
+     ]
+     The minimum path sum from top to bottom is 11 (i.e., 2 + 3 + 5 + 1 = 11).
+
+     Note:
+     Bonus point if you are able to do this using only O(n) extra space, where n is the total number of rows in the triangle.
+     * */
+    public int minimumTotal(List<List<Integer>> triangle) {
+        if (triangle == null) {
+            return 0;
+        }
+        ListIterator<List<Integer>> iter = triangle.listIterator();
+        Integer[] out = minTotalDfs(iter,iter.next());
+        return out[0];
+    }
+
+    private Integer[] minTotalDfs(ListIterator<List<Integer>> iter,List<Integer> cur) {
+        if (!iter.hasNext()) {
+            return cur.toArray(new Integer[0]);
+        }
+
+        Integer[] nextLevel = minTotalDfs(iter,iter.next());
+        int index = 0;
+        for (Integer i : cur) {
+            nextLevel[index] = i + Math.min(nextLevel[index],nextLevel[index + 1]);//index < nextLevel.length
+            index++;
+        }
+
+        return nextLevel;
+    }
+
+
+    /**Say you have an array for which the ith element is the price of a given stock on day i.
+
+     If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
+
+     Example 1:
+     Input: [7, 1, 5, 3, 6, 4]
+     Output: 5
+
+     max. difference = 6-1 = 5 (not 7-1 = 6, as selling price needs to be larger than buying price)
+     Example 2:
+     Input: [7, 6, 4, 3, 1]
+     Output: 0
+
+     In this case, no transaction is done, i.e. max profit = 0.
+     * */
+
+    public int maxProfitI(int[] prices) {
+        if (prices == null || prices.length <= 1) {
+            return 0;
+        }
+
+        int[] dp = new int[prices.length];
+        int min = Integer.MAX_VALUE;
+
+        // dp[i] indicates the min val before index i
+        for (int i = 0; i < dp.length; i++) {
+            min = Math.min(min,prices[i]);
+            dp[i] = min;
+        }
+        int maxProfit = 0;
+        for (int i = 0; i < dp.length; i++) {
+            maxProfit = Math.max(maxProfit,prices[i] - dp[i]);
+        }
+        return maxProfit;
+    }
+
+    /**Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, determine if s can be segmented into a space-separated sequence of one or more dictionary words. You may assume the dictionary does not contain duplicate words.
+
+     For example, given
+     s = "leetcode",
+     dict = ["leet", "code"].
+
+     Return true because "leetcode" can be segmented as "leet code".*/
+    public boolean wordBreakI(String s, List<String> wordDict) {
+        if (s == null || s.length() == 0) {
+            return false;
+        }
+        Set<String> dict = wordDictSet(wordDict);
+        char[] sa = s.toCharArray();
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j <= i;j++) {
+                // System.out.println(dp[j - 1] + " " +new String(sa,j - 1,i - j + 1));
+                if (dp[j - 1] && dict.contains(new String(sa,j - 1,i - j + 1))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[dp.length - 1];
+    }
+
+    private Set<String> wordDictSet(List<String> dic) {
+        Set<String> out = new HashSet<>();
+        for (String i : dic) {
+            out.add(i);
+        }
+        return out;
+    }
+
+    /** Given a non-empty string s and a dictionary wordDict containing a list of non-empty words, add spaces in s to construct a sentence where each word is a valid dictionary word. You may assume the dictionary does not contain duplicate words.
+
+     Return all such possible sentences.
+
+     For example, given
+     s = "catsanddog",
+     dict = ["cat", "cats", "and", "sand", "dog"].
+
+     A solution is ["cats and dog", "cat sand dog"].
+     * */
+    public List<String> wordBreak(String s, List<String> wordDict) {
+        List<String> out = new ArrayList<>();
+
+        if (s == null || s.length() == 0) {
+            return out;
+        }
+        Set<String> dict = wordDictSet(wordDict);
+        char[] sa = s.toCharArray();
+        boolean[] dp = new boolean[s.length() + 1];
+        dp[0] = true;
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 1; j <= i;j++) {
+                // System.out.println(dp[j - 1] + " " +new String(sa,j - 1,i - j + 1));
+                if (dp[j - 1] && dict.contains(new String(sa,j - 1,i - j + 1))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+
+        if (!dp[dp.length - 1]) {
+            return out;
+        }
+
+        wordBreakDfs(out,sa,dp,dp.length - 1,new ArrayList<String>());
+        return  out;
+    }
+
+    private void wordBreakDfs(List<String> out, char[] sa,boolean[] dp, int anchor,List<String> temp) {
+        if (anchor < 0) {
+            StringBuilder str = new StringBuilder();
+            ListIterator<String> iter = temp.listIterator();
+            while(iter.hasNext()) {
+                str.append(iter.next());
+                if (iter.hasNext()) str.append(" ");
+            }
+            out.add(str.reverse().toString());
+            return;
+        }
+
+        for (int i = anchor; i > 0; i--) {
+            if (dp[i]) {
+                temp.add(new String(sa,i - 1, anchor - i + 1));
+                wordBreakDfs(out,sa,dp,i - 1,temp);
+                temp.remove(temp.size() - 1);
+            }
+        }
+    }
 
 }
