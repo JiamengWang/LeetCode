@@ -1,5 +1,5 @@
 package com.company;
-
+import java.util.*;
 public class brainTestSolution {
     /**generating a list of primes using sieve of  eratosthenes
      * */
@@ -44,4 +44,50 @@ public class brainTestSolution {
         }
         return next;
     }
+
+
+    /**Given a digit string, return all possible letter combinations that the number could represent.
+
+     A mapping of digit to letters (just like on the telephone buttons) is given below.
+     Input:Digit string "23"
+     Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+     */
+    public List<String> letterCombinations(String digits) {
+        List<String> out =  new ArrayList<>();
+        char[][] dic = {
+                {'a','b','c'},
+                {'d','e','f'},
+                {'g','h','i'},
+                {'j','k','l'},
+                {'m','n','o'},
+                {'p','q','r','s'},
+                {'t','u','v'},
+                {'w','x','y','z'}
+        };
+        letterCombineDfs(out,dic,new char[digits.length()],0,digits);
+        return out;
+    }
+
+    private void letterCombineDfs(List<String> out,char[][] dic,char[] result, int index, String digit) {
+        if (index >= result.length) {
+            out.add(new String(result));
+            return;
+        }
+        int d = digit.charAt(index) - '0';
+        if (d >= 2) {
+            for (Character c : dic[d - 2]) {
+                result[index] = c;
+                letterCombineDfs(out,dic,result,index + 1, digit);
+            }
+        } else {
+            letterCombineDfs(out,dic,result,index + 1, digit);
+        }
+    }
+
+    private void swap(char[] c, int i, int j) {
+        char t = c[i];
+        c[i] = c[j];
+        c[j] = t;
+    }
+
 }

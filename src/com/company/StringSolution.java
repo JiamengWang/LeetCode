@@ -193,4 +193,69 @@ public class StringSolution {
         }
         return longest;
     }
+
+
+    /**Given a pattern and a string str, find if str follows the same pattern.
+
+     Here follow means a full match, such that there is a bijection between a letter in pattern and a non-empty word in str.
+
+     Examples:
+     pattern = "abba", str = "dog cat cat dog" should return true.
+     pattern = "abba", str = "dog cat cat fish" should return false.
+     pattern = "aaaa", str = "dog cat cat dog" should return false.
+     pattern = "abba", str = "dog dog dog dog" should return false.
+     Notes:
+     You may assume pattern contains only lowercase letters, and str contains lowercase letters separated by a single space.*/
+    public boolean wordPattern(String pattern, String str) {
+        Map<Character,List<Character>> patternMap = new HashMap<>();
+        return patternHelper(patternMap,new HashSet<String>(),0,0,pattern,str);
+    }
+
+    private boolean patternHelper(Map<Character,List<Character>> map, Set<String> set,int pindex,int sindex, String pattern, String str) {
+
+        if (pindex == pattern.length() && sindex == str.length()) {
+            return true;
+        } else if (pindex == pattern.length() || sindex == str.length()) {
+            return false;
+        }
+        char patt = pattern.charAt(pindex);
+        List<Character> pattString = map.get(patt);
+
+        if (pattString == null || pattString.size() == 0) {
+            /*create pattern - string relation*/
+            pattString = new ArrayList<>();
+            map.put(patt,pattString);
+            for (int i = sindex; i < str.length(); i++) {
+                pattString.add(str.charAt(i));
+                String newstr = ArrayToString(pattString);
+                if (set.add(newstr)) {
+                    if (patternHelper(map,set,pindex+1, i + 1,pattern,str)) {
+                        return true;
+                    }
+                    set.remove(newstr);
+                }
+            }
+            map.remove(patt);
+            return false;
+        } else {
+            /*use the existed relation to judge if the string match out pattern*/
+            ListIterator<Character> iter = pattString.listIterator();
+            int ssindex = sindex;
+            while (iter.hasNext()) {
+                if (ssindex >= str.length() || !(iter.next() == str.charAt(ssindex))) {
+                    return false;
+                }
+                ssindex++;
+            }
+            return patternHelper(map,set,pindex + 1,sindex + pattString.size(),pattern,str);
+        }
+    }
+
+    private String ArrayToString(List<Character> list){
+        StringBuilder out = new StringBuilder();
+        for (Character c : list) {
+            out.append(c);
+        }
+        return out.toString();
+    }
 }
