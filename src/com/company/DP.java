@@ -436,4 +436,156 @@ public class DP {
         }
     }
 
+    /**
+     * After robbing those houses on that street, the thief has found himself a new place for his thievery so that he will not get too much attention. This time, all houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, the security system for these houses remain the same as for those in the previous street.
+
+     Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.*/
+
+    public int rob(int[] nums) {
+        if (nums == null || nums.length <= 1) {
+            return 0;
+        } else if (nums.length == 2) {
+            return Math.max(nums[0],nums[1]);
+        }
+        int[] dp = new int[nums.length];
+        int head = robHelper(nums,dp,0,dp.length - 2);
+        int nohead = robHelper(nums,dp,1,dp.length - 1);
+        return Math.max(head,nohead);
+    }
+
+    private int robHelper(int[] a, int[] dp,int b, int e) {
+        dp[b] = a[b];
+        dp[b + 1] = Math.max(a[b],a[b + 1]);
+        for (int i = b + 2; i <= e; i++) {
+            dp[i] = Math.max(a[i] + dp[i - 2],dp[i - 1]);
+        }
+        return dp[e];
+    }
+
+    /**Given a 2D matrix matrix, find the sum of the elements inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+     * Given matrix = [
+     [3, 0, 1, 4, 2],
+     [5, 6, 3, 2, 1],
+     [1, 2, 0, 1, 5],
+     [4, 1, 0, 1, 7],
+     [1, 0, 3, 0, 5]
+     ]
+
+     sumRegion(2, 1, 4, 3) -> 8
+     sumRegion(1, 1, 2, 2) -> 11
+     sumRegion(1, 2, 2, 4) -> 12
+     * */
+
+    class NumMatrix {
+        private int[][] dp;
+
+        public NumMatrix(int[][] matrix) {
+            if (matrix == null) {
+                dp = null;
+                return;
+            }
+
+            int x = matrix.length;
+            if (x == 0) {
+                return;
+            }
+
+            int y = matrix[0].length;
+            if (y == 0) {
+                return;
+            }
+
+            dp = new int[x][y];
+            initialize(dp,matrix);
+        }
+
+        public int sumRegion(int row1, int col1, int row2, int col2) {
+            int sum = 0;
+            for (int i = row1; i <= row2; i++) {
+                sum += dp[i][col2];
+                if (col1 > 0) {
+                    sum -= dp[i][col1 - 1];
+                }
+            }
+            return sum;
+        }
+
+        private void initialize(int[][] dp,int[][] m) {
+            for (int i = 0; i < dp.length; i++) {
+                for (int j = 0; j < dp[0].length; j++) {
+                    if (j == 0) {
+                        dp[i][j] = m[i][j];
+                    } else {
+                        dp[i][j] = m[i][j] + dp[i][j - 1];
+                    }
+                }
+            }
+        }
+    }
+
+    /**Write a program to find the n-th ugly number.
+
+     Ugly numbers are positive numbers whose prime factors only include 2, 3, 5. For example, 1, 2, 3, 4, 5, 6, 8, 9, 10, 12 is the sequence of the first 10 ugly numbers.
+
+     Note that 1 is typically treated as an ugly number, and n does not exceed 1690.
+     * */
+    public int nthUglyNumber(int n) {
+        if (n == 0) {
+            return -1;
+        }
+        int[] dp = new int[n];
+        dp[0]  = 1;
+
+        int index2 = 0, index3 = 0, index5 = 0;
+        int factor2 = 2, factor3 = 3, factor5 = 5;
+
+        for (int i = 1; i < n;i ++) {
+            int min = Math.min(Math.min(factor2,factor3),factor5);
+            dp[i] = min;
+            if (min == factor2) {
+                factor2 = 2 * dp[++index2];
+            }
+            if (min == factor3) {
+                factor3 = 3 * dp[++index3];
+            }
+            if (min == factor5) {
+                factor5 = 5 * dp[++index5];
+            }
+        }
+        return dp[n - 1];
+    }
+
+
+    /**The demons had captured the princess (P) and imprisoned her in the bottom-right corner of a dungeon. The dungeon consists of M x N rooms laid out in a 2D grid. Our valiant knight (K) was initially positioned in the top-left room and must fight his way through the dungeon to rescue the princess.
+
+     The knight has an initial health point represented by a positive integer. If at any point his health point drops to 0 or below, he dies immediately.
+
+     Some of the rooms are guarded by demons, so the knight loses health (negative integers) upon entering these rooms; other rooms are either empty (0's) or contain magic orbs that increase the knight's health (positive integers).
+
+     In order to reach the princess as quickly as possible, the knight decides to move only rightward or downward in each step.
+
+
+     Write a function to determine the knight's minimum initial health so that he is able to rescue the princess.
+
+     For example, given the dungeon below, the initial health of the knight must be at least 7 if he follows the optimal path RIGHT-> RIGHT -> DOWN -> DOWN.*/
+    public int calculateMinimumHP(int[][] dungeon) {
+        int x = dungeon.length;
+        int y = dungeon[0].length;
+
+        int[][] dp = new int[x][y];
+        for (int i = x - 1; i >= 0; i--) {
+            for (int j = y - 1; j >= 0; j--) {
+                if (i == x - 1 && j == y - 1) {
+                    dp[i][j] = dungeon[i][j];
+                } else if (j == y - 1) {
+                    dp[i][j] = dungeon[i][j] + dp[i + 1][j];
+                } else if (i == x - 1) {
+                    dp[i][j] = dungeon[i][j] + dp[i][j + 1];
+                } else {
+                    dp[i][j] = dungeon[i][j] + Math.min(dp[i + 1][j],dp[i][j + 1]);
+                }
+            }
+        }
+        return dp[0][0];
+    }
 }
