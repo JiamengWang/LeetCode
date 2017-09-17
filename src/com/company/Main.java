@@ -51,6 +51,6 @@ public class Main {
 //        GridGame game = new GridGame(grid,new GridAi(grid));
 //        game.begin();
 
-        System.out.println(dp.rob(a));
+        System.out.println(dp.numDistinct(s2,s1));
     }
 }

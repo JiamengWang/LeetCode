@@ -588,4 +588,112 @@ public class DP {
         }
         return dp[0][0];
     }
+
+
+    /**Given a 2D binary matrix filled with 0's and 1's, find the largest square containing only 1's and return its area.
+
+     For example, given the following matrix:
+
+     1 0 1 0 0
+     1 0 1 1 1
+     1 1 1 1 1
+     1 0 0 1 0
+     Return 4.*/
+    public int maximalSquare(char[][] matrix) {
+        if (matrix == null) {
+            return 0;
+        }
+
+        int x = matrix.length;
+        int y = matrix[0].length;
+        int[][] dp = new int[x][y];
+        int maxlen = 0;
+
+        for (int i = 0; i < x; i++) {
+
+            for (int j = 0; j < y; j++) {
+                if (matrix[i][j] == '1') {
+                    if (i == 0 && j == 0) {
+                        dp[i][j] = 1;
+                    } else if (i == 0 || j == 0) {
+                        dp[i][j] = 1;
+                    } else {
+                        dp[i][j] = Math.min(dp[i - 1][j] ,Math.min(dp[i - 1][j - 1],dp[i][j - 1])) + 1;
+                    }
+                    maxlen = Math.max(maxlen,dp[i][j]);
+                }
+            }
+        }
+        return maxlen * maxlen;
+
+    }
+
+
+    /**Given a string S and a string T, count the number of distinct subsequences of S which equals T.
+
+     A subsequence of a string is a new string which is formed from the original string by deleting some (can be none) of the characters without disturbing the relative positions of the remaining characters. (ie, "ACE" is a subsequence of "ABCDE" while "AEC" is not).
+
+     Here is an example:
+     S = "rabbbit", T = "rabbit"
+
+     Return 3.*/
+
+    //two pointer sol,DFS
+    // solution is correct, but timeout time complixity is O(m^2)
+    public int numDistinctI(String s, String t) {
+        if (s == null || t == null || s.length() < t.length()) {
+            return 0;
+        }
+        return numDistinctHelper(s,0,t,0);
+    }
+
+    private int numDistinctHelper(String s, int sindex, String t, int tindex) {
+        if (tindex == t.length()) {
+            return 1;
+        } else if (sindex == s.length()) {
+            return 0;
+        }
+        char tchar = t.charAt(tindex);
+        int tempsindex = sindex;
+        int out = 0;
+        while (tempsindex < s.length()) {
+            if (s.charAt(tempsindex) == tchar) {
+                out += numDistinctHelper(s,tempsindex + 1,t,tindex + 1);
+            }
+            tempsindex++;
+        }
+        return out;
+    }
+
+    // dp solution
+    public int numDistinct(String s, String t) {
+        if (s == null || t == null || s.length() < t.length()) {
+            return 0;
+        } else if (t.length() == 0) {
+            return 1;
+        }
+
+        int[] premem = new int[s.length() + 1];
+        for (int i = 0; i < premem.length; i++) {
+            premem[i] = 1;
+        }
+        int[] curmem = new int[s.length() + 1];
+
+        for (int i = 0; i < t.length(); i++) {
+            char tempchar = t.charAt(i);
+            for (int j = 0; j < s.length(); j++) {
+                if (tempchar == s.charAt(j)) {
+                    curmem[j + 1] = curmem[j] + premem[j];
+                } else {
+                    curmem[j + 1] = curmem[j];
+                }
+                premem[j] = curmem[j];
+                curmem[j] = 0 ;
+            }
+            premem[premem.length - 1] = curmem[curmem.length - 1];
+            curmem[curmem.length - 1] = 0;
+        }
+        return premem[premem.length - 1];
+    }
+
 }
