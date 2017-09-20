@@ -294,4 +294,182 @@ public class ArraySolution {
         return sell;
     }
 
+
+    /**Given a string and an integer k, you need to reverse the first k characters for every 2k characters counting from the start of the string. If there are less than k characters left, reverse all of them. If there are less than 2k but greater than or equal to k characters, then reverse the first k characters and left the other as original.
+     Example:
+     Input: s = "abcdefg", k = 2
+     Output: "bacdfeg"
+     Restrictions:
+     The string consists of lower English letters only.
+     Length of the given string and k will in the range [1, 10000]*/
+    public String reverseStr(String s, int k) {
+        if (s == null || s.length() == 1) {
+            return s;
+        }
+        char[] a = s.toCharArray();
+        int prev = 0;
+        int cur = 0;
+
+        while (cur < s.length()) {
+            if (cur + k - 1< s.length()) {
+                swapHelper(a,cur,cur + k - 1);
+            } else {
+                swapHelper(a,cur,a.length - 1);
+            }
+            cur += 2*k;
+        }
+        return new String(a);
+    }
+
+    private void swapHelper(char[] a, int b, int e) {
+        while (b < e) {
+            char t = a[b];
+            a[b] = a[e];
+            a[e] = t;
+            b++;
+            e--;
+        }
+    }
+
+    /**You are asked to cut off trees in a forest for a golf event. The forest is represented as a non-negative 2D map, in this map:
+
+     0 represents the obstacle can't be reached.
+     1 represents the ground can be walked through.
+     The place with number bigger than 1 represents a tree can be walked through, and this positive number represents the tree's height.
+     You are asked to cut off all the trees in this forest in the order of tree's height - always cut off the tree with lowest height first. And after cutting, the original place has the tree will become a grass (value 1).
+
+     You will start from the point (0, 0) and you should output the minimum steps you need to walk to cut off all the trees. If you can't cut off all the trees, output -1 in that situation.
+
+     You are guaranteed that no two trees have the same height and there is at least one tree needs to be cut off.
+
+     Example 1:
+     Input:
+     [
+     [1,2,3],
+     [0,0,4],
+     [7,6,5]
+     ]
+     Output: 6
+     Example 2:
+     Input:
+     [
+     [1,2,3],
+     [0,0,0],
+     [7,6,5]
+     ]
+     Output: -1
+     Example 3:
+     Input:
+     [
+     [2,3,4],
+     [0,0,5],
+     [8,7,6]
+     ]
+     Output: 6
+     Explanation: You started from the point (0,0) and you can cut off the tree in (0,0) directly without walking.
+     * */
+    public int[][] dir = new int[][]{
+            {0,1},{1,0},{0,-1},{-1,0}
+    };
+    public int cutOffTree(List<List<Integer>> forest) {
+        if (forest == null || forest.size() == 0) {
+            return 0;
+        }
+
+        int x = forest.size(); int y = forest.get(0).size();
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[2] - o2[2];
+            }
+        });
+
+        for (int i = 0; i < x; i++) {
+            for (int j = 0; j < y; j++) {
+                if (forest.get(i).get(j) > 1) {
+                    pq.offer(new int[]{i, j, forest.get(i).get(j)});
+                }
+            }
+        }
+
+        int sum = 0;
+        int[] prev = new int[2];
+
+        while (!pq.isEmpty()) {
+            int[] cur = pq.poll();
+            int step = minDis(forest,prev,cur,x,y);
+            if (step < 0) return -1;
+
+            sum += step;
+            prev[0] = cur[0];
+            prev[1] = cur[1];
+        }
+        return sum;
+    }
+
+    private int minDis(List<List<Integer>> a, int[] prev, int[] cur,int m, int n) {
+        // using bfs to get min distance from prev to cur
+        int step = 0;
+        boolean[][] isVisited = new boolean[m][n];
+        Deque<int[]> q = new LinkedList<>();
+        q.offerLast(prev);
+        isVisited[prev[0]][prev[1]] = true;
+
+        while (!q.isEmpty()) {
+            int size = q.size();
+            while (size-- > 0) {
+                int[] tmp = q.pollFirst();
+                if (tmp[0] == cur[0] && tmp[1] == cur[1]) {
+                    return step;
+                }
+                for (int[] d : dir) {
+                    int xx = tmp[0] + d[0];
+                    int yy = tmp[1] + d[1];
+                    if (xx < 0 || xx >= m || yy < 0 || yy >= n || isVisited[xx][yy] || a.get(xx).get(yy) == 0) {
+                        continue;
+                    }
+                    q.offerLast(new int[]{xx,yy});
+                    isVisited[xx][yy] = true;
+                }
+            }
+            step++;
+        }
+        return -1;
+    }
+
+
+    /**Suppose you have a long flowerbed in which some of the plots are planted and some are not. However, flowers cannot be planted in adjacent plots - they would compete for water and both would die.
+
+     Given a flowerbed (represented as an array containing 0 and 1, where 0 means empty and 1 means not empty), and a number n, return if n new flowers can be planted in it without violating the no-adjacent-flowers rule.
+
+     Example 1:
+     Input: flowerbed = [1,0,0,0,1], n = 1
+     Output: True
+     Example 2:
+     Input: flowerbed = [1,0,0,0,1], n = 2
+     Output: False
+     Note:
+     The input array won't violate no-adjacent-flowers rule.
+     The input array size is in the range of [1, 20000].
+     n is a non-negative integer which won't exceed the input array size.*/
+    public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        if (flowerbed == null || flowerbed.length == 0) {
+            return false;
+        }
+
+        int index = 0;
+        while (index < flowerbed.length) {
+            if (flowerbed[index] == 0) {
+                if (index + 1 < flowerbed.length && flowerbed[index + 1] == 1) {
+                    index += 2;
+                } else {
+                    n--;
+                    index += 2;
+                }
+            }
+        }
+        return n == 0;
+    }
+
 }

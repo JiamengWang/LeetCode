@@ -258,4 +258,75 @@ public class StringSolution {
         }
         return out.toString();
     }
+
+
+    /**
+     * Given a string, you need to reverse the order of characters in each word within a sentence while still preserving whitespace and initial word order.
+
+     Example 1:
+     Input: "Let's take LeetCode contest"
+     Output: "s'teL ekat edoCteeL tsetnoc"
+     */
+
+    public String reverseWords(String s) {
+        if (s == null || s.length() <= 1) {
+            return s;
+        }
+
+        char[] sar = s.toCharArray();
+
+        int cur = 0;
+        int prev = 0;
+
+        while (cur < sar.length) {
+            if (sar[cur] != ' ') {
+                cur++;
+            } else {
+                swapHelper(sar,prev,cur - 1);
+                while (cur < sar.length && sar[cur] == ' ') {
+                    cur++;
+                }
+                prev = cur;
+            }
+        }
+        swapHelper(sar,prev,cur - 1);
+        return new String(sar);
+    }
+
+    private void swapHelper(char[] ar, int b, int e) {
+        while (b < e) {
+            char t = ar[b];
+            ar[b] = ar[e];
+            ar[e] = t;
+            b++;
+            e--;
+        }
+    }
+
+    /**Given an integer, return its base 7 string representation.
+
+     Example 1:
+     Input: 100
+     Output: "202"
+     Example 2:
+     Input: -7
+     Output: "-10"*/
+    public String convertToBase7(int num) {
+        StringBuilder out = new StringBuilder();
+        if (num < 0) out.append('-');
+        num = Math.abs(num);
+
+        int base = 1;
+
+        while (base * 7 <= num) {
+            base *= 7;
+        }
+
+        while (base > 0) {
+            out.append(num / base);
+            num = num % base;
+            base /= 7;
+        }
+        return out.toString();
+    }
 }

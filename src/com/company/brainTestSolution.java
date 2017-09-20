@@ -90,4 +90,20 @@ public class brainTestSolution {
         c[j] = t;
     }
 
+
+    public boolean judgeSquareSum(int c) {
+        if (c <= 1) {
+            return true;
+        }
+
+        int upbound = (int)Math.sqrt(c);
+
+        for (int i = 1; i <= upbound / 2; i++) {
+            double remaining = Math.sqrt(c - i*i);
+            if (remaining == (int)remaining) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
