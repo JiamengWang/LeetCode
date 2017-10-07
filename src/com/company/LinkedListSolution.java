@@ -1,5 +1,10 @@
 package com.company;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class LinkedListSolution {
     class ListNode {
         public int value;
@@ -74,5 +79,51 @@ public class LinkedListSolution {
     }
 
 
+    /**A linked list is given such that each node contains an additional random pointer which could point to any node in the list or null.
+
+     Return a deep copy of the list.
+     * */
+    class RandomListNode {
+      int label;
+      RandomListNode next, random;
+      RandomListNode(int x) { this.label = x; }
+    };
+
+    public RandomListNode copyRandomList(RandomListNode head) {
+        if (head == null) {
+            return null;
+        }
+
+        RandomListNode root = new RandomListNode(0);
+        RandomListNode cur = root;
+        Map<RandomListNode,List<RandomListNode>> randomRecord = new HashMap<>();
+        Map<RandomListNode,RandomListNode> copyNode = new HashMap<>();
+
+        // copy linkedlist without assign random pointer
+        while (head != null) {
+            cur.next = new RandomListNode(head.label);
+            copyNode.put(head,cur.next);
+            if (head.random != null) {
+                List<RandomListNode> temp = randomRecord.get(head.random);
+                if (temp == null) {
+                    temp = new ArrayList<>();
+                }
+                temp.add(cur.next);
+                randomRecord.put(head.random,temp);
+            }
+            cur = cur.next;
+            head = head.next;
+        }
+
+        // assign random pointer
+        for (Map.Entry<RandomListNode,List<RandomListNode>> entry : randomRecord.entrySet()) {
+            RandomListNode temp = copyNode.get(entry.getKey());
+            for (RandomListNode t : entry.getValue()) {
+                t.random = temp;
+            }
+        }
+
+        return root.next;
+    }
 
 }

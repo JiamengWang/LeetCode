@@ -329,4 +329,247 @@ public class StringSolution {
         }
         return out.toString();
     }
+
+
+    /** Given a list of unique words, find all pairs of distinct indices (i, j) in the given list, so that the concatenation of the two words, i.e. words[i] + words[j] is a palindrome.
+
+     Example 1:
+     Given words = ["bat", "tab", "cat"]
+     Return [[0, 1], [1, 0]]
+     The palindromes are ["battab", "tabbat"]
+     Example 2:
+     Given words = ["abcd", "dcba", "lls", "s", "sssll"]
+     Return [[0, 1], [1, 0], [3, 2], [2, 4]]
+     The palindromes are ["dcbaabcd", "abcddcba", "slls", "llssssll"]
+     */
+
+    // time out
+    public List<List<Integer>> palindromePairsI(String[] words) {
+        List<List<Integer>> out = new ArrayList<>();
+        for (int i = 0; i < words.length; i++) {
+            for (int j = 0; j < i;j++) {
+                if (isPalidromePair(words[i],words[j])) out.add(Arrays.asList(new Integer[]{i,j}));
+                if (isPalidromePair(words[j],words[i])) out.add(Arrays.asList(new Integer[]{j,i}));
+            }
+        }
+        return out;
+    }
+
+    private boolean isPalidromePair (String l,String r) {
+        if (l == null || r == null) {
+            return true;
+        }
+        int ll = l.length();
+        int rl = r.length();
+        int tl = ll + rl - 1;
+        int left = 0;
+        int right = tl;
+        if ((tl & 1) != 0) {
+             left = tl / 2;
+             right = left + 1;
+        } else {
+             left = tl / 2 - 1;
+             right = tl / 2 + 1;
+        }
+        while (left >= 0 && right <= tl) {
+            if (getCharFromTwoString(l,r,left) != getCharFromTwoString(l,r,right)) {
+                return false;
+            }
+            left--;
+            right++;
+        }
+        return true;
+    }
+
+    private char getCharFromTwoString(String l, String r,int index){
+        if (index >= l.length()) {
+            return r.charAt(index - l.length());
+        } else {
+            return l.charAt(index);
+        }
+    }
+
+    // use hashmap to accelerate find rever part
+//    public List<List<Integer>> palindromePairs(String[] words){
+//        List<List<Integer>> out = new ArrayList<>();
+//        Map<String,Integer> map = new HashMap<>();
+//
+//        for (int i = 0; i <  words.length; i++) {
+//            map.put(words[i],i);
+//        }
+//
+//        for (int i = 0; i < words.length; i++) {
+////            char[] warr = words[i].toCharArray();
+//            for (int j = 0; j <= words[i].length();j++) {
+//                String str1 = words[i].substring(0, j);
+//                String str2 = words[i].substring(j);
+//                if (isPalidrome(warr,0,j - 1)) {
+//                    Integer index = map.get(new StringBuilder(new String(warr,j, warr.length - j)).reverse().toString());
+//                    if (index != null && index != i) {
+//                        List<Integer> ou = new ArrayList<>();
+//                        ou.add(index);
+//                        ou.add(i);
+//                        out.add(ou);
+//                    }
+//                }
+//
+//                if (isPalidrome(warr,j,warr.length - 1)) {
+//                    Integer index = map.get(new StringBuilder(new String(warr,0, j)).reverse().toString());
+//                    if (index != null && index != i) {
+//                        List<Integer> ou = new ArrayList<>();
+//                        ou.add(i);
+//                        ou.add(index);
+//                        out.add(ou);
+//                    }
+//                }
+//            }
+//        }
+//        return out;
+//    }
+//
+//    private boolean isPalidrome(char[] s,int b, int e) {
+//        if (b > e || b < 0 || e >= s.length) return false;
+//        int low = b;
+//        int high = e;
+//        while (low <= high) {
+//            if (s[low] == s[high]) {
+//                low++;
+//                high--;
+//                continue;
+//            }
+//            return false;
+//        }
+//        return true;
+//    }
+
+
+
+        public String addBinary(String a, String b) {
+            if (a == null || b == null) {
+                return a == null ? b : a;
+            } else if (a.length() == 0) {
+                return b;
+            } else if (b.length() == 0) {
+                return a;
+            }
+
+            int max = Math.max(a.length(),b.length());
+            char[] out = new char[max + 1];
+
+            int maxIndex = out.length - 1;
+            int aIndex = a.length() - 1;
+            int bIndex = b.length() - 1;
+            int carry = 0;
+            while (aIndex >= 0 && bIndex >= 0) {
+                int sum = carry + (a.charAt(aIndex--) - '0') + (b.charAt(bIndex--) - '0');
+                if (sum >= 2) {
+                    sum = 0;
+                    carry = 1;
+                } else {
+                    carry = 0;
+                }
+                out[maxIndex--] = (char)('0'+sum);
+            }
+
+            while (aIndex >= 0 && maxIndex >= 0) {
+                int sum = carry + (a.charAt(aIndex--) - '0');
+                if (sum >= 2) {
+                    sum = 0;
+                    carry = 1;
+                } else {
+                    carry = 0;
+                }
+                out[maxIndex--] = (char)('0'+sum);
+            }
+
+            while (bIndex >= 0 && maxIndex >= 0) {
+                int sum = carry + (b.charAt(bIndex--) - '0');
+                if (sum >= 2) {
+                    sum = 0;
+                    carry = 1;
+                } else {
+                    carry = 0;
+                }
+                out[maxIndex--] = (char)('0'+sum);
+            }
+
+            if (carry == 1) {
+                out[maxIndex--] = '1';
+
+            }
+            return new String(out,maxIndex + 1,out.length - maxIndex - 1);
+        }
+
+
+    /**Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
+
+     Strings consists of lowercase English letters only and the length of both strings s and p will not be larger than 20,100.
+
+     The order of output does not matter.
+
+     Example 1:
+
+     Input:
+     s: "cbaebabacd" p: "abc"
+
+     Output:
+     [0, 6]
+
+     Explanation:
+     The substring with start index = 0 is "cba", which is an anagram of "abc".
+     The substring with start index = 6 is "bac", which is an anagram of "abc".
+     Example 2:
+
+     Input:
+     s: "abab" p: "ab"
+
+     Output:
+     [0, 1, 2]
+
+     Explanation:
+     The substring with start index = 0 is "ab", which is an anagram of "ab".
+     The substring with start index = 1 is "ba", which is an anagram of "ab".
+     The substring with start index = 2 is "ab", which is an anagram of "ab".*/
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> out = new ArrayList<>();
+        if (s == null || p == null || s.length() < p.length()) {
+            return out;
+        }
+
+        // count appearance of each characters in p
+//        Map<Character,Integer> map = new HashMap<>();
+        int[] counts = new int[26];
+        for (int i = 0; i < p.length(); i++) {
+            char temp = p.charAt(i);
+            counts[temp - 'a'] += 1;
+        }
+
+        for (int j = 0; j <= s.length() - p.length(); j++) {
+            char temp = s.charAt(j);
+            if (counts[temp - 'a'] != 0) {
+                findana(out,copyintArray(counts),s,j,p.length());
+            }
+        }
+        return out;
+    }
+
+    private int[] copyintArray(int[] a) {
+        int[] out = new int[a.length];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = a[i];
+        }
+        return out;
+    }
+
+    private void findana(List<Integer> out,int[] counts, String s, int index,int offset) {
+        for (int i = index; i <= index + offset; i++) {
+            char temp = s.charAt(i);
+            if (counts[temp - 'a'] != 0) {
+                counts[temp - 'a'] -= 1;
+            } else {
+                return;
+            }
+        }
+        out.add(index);
+    }
 }

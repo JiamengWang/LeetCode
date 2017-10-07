@@ -6,16 +6,18 @@ public class Main {
     public static void main(String[] args) {
 	// write your code here
 
-//        int[] a = {7,2,3,4};
-//        int[] b = {1,2,3,4,5,6};
-//        int[] a1 = {3, 1, 5, 5, 1, 4, 2};
-//
-//        int[] c = {10,8,3,0};
-//        int[] d = {1,4,4,8,14};
-//
-        String s1 = "abba";
-        String s2 = "abcdefg";
+        int[] a = {1,2,2,3,1,3,3,2,1};
+        int[] b = {1,2,3,4,5,6};
+        int[] a1 = {3, 1, 5, 5, 1, 4, 2};
+
+        int[] c = {10,8,3,0};
+        int[] d = {1,4,4,8,14};
+
+        String s1 = "101";
+        String s2 = "011";
         String s3 = "dog cat cat dog";
+        String[] ss1 = {"abcd","dcba","lls","s","sssll"};
+        String[] ss2 = {"a",""};
 //        String[] input = {"aaa","bbb"};
 //
 //
@@ -28,7 +30,9 @@ public class Main {
 //        DP dp = new DP();
 //        Recursion re = new Recursion();
         ArraySolution ar = new ArraySolution();
-        StringSolution ss = new StringSolution();
+
+//        StringSolution ss = new StringSolution();
+//        System.out.println(ss.addBinary(s1,s2));
 //        LinkedListSolution ls = new LinkedListSolution();
 //        TreeSolution tr = new TreeSolution();
 //        tr.run(new String[]{"7","3","9","1","5","8","10","#","2","4","6"});
@@ -50,13 +54,13 @@ public class Main {
 
 //        GridGame game = new GridGame(grid,new GridAi(grid));
 //        game.begin();
-        Integer[][] ar1 = {{1,2,3},{0,0,4},{5,6,7}};
-        List<List<Integer>> l1 = new ArrayList<>();
-        for (Integer[] a : ar1){
-            l1.add(Arrays.asList(a));
-        }
-
-        System.out.println(ar.cutOffTree(l1));
+//        Integer[][] ar1 = {{1,2,3},{0,0,4},{5,6,7}};
+//        List<List<Integer>> l1 = new ArrayList<>();
+//        for (Integer[] a : ar1){
+//            l1.add(Arrays.asList(a));
+//        }
+//
+        System.out.println(ar.majority(a,4));
 
 //        Scanner cin = new Scanner(System.in);
 //        int b;

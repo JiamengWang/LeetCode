@@ -472,4 +472,210 @@ public class ArraySolution {
         return n == 0;
     }
 
+
+    /**Given an integer array with even length, where different numbers in this array represent different kinds of candies. Each number means one candy of the corresponding kind. You need to distribute these candies equally in number to brother and sister. Return the maximum number of kinds of candies the sister could gain.
+
+     Example 1:
+     Input: candies = [1,1,2,2,3,3]
+     Output: 3
+     Explanation:
+     There are three different kinds of candies (1, 2 and 3), and two candies for each kind.
+     Optimal distribution: The sister has candies [1,2,3] and the brother has candies [1,2,3], too.
+     The sister has three different kinds of candies.
+     Example 2:
+     Input: candies = [1,1,2,3]
+     Output: 2
+     Explanation: For example, the sister has candies [2,3] and the brother has candies [1,1].
+     The sister has two different kinds of candies, the brother has only one kind of candies.
+     Note:
+
+     The length of the given array is in range [2, 10,000], and will be even.
+     The number in given array is in range [-100,000, 100,000].*/
+
+    public int distributeCandies(int[] candies) {
+        // I will calculate how many different kinds of candies existed in the candies array
+        // If number of kinds is greater than candies.length / 2 then return candies.length / 2
+        // else return number of kinds
+        Set<Integer> kinds = new HashSet<>();
+        for (int i : candies) {
+            kinds.add(i);
+        }
+
+        return kinds.size() > candies.length / 2 ? candies.length / 2 : kinds.size();
+    }
+
+
+    /**Given an array of integers, return indices of the two numbers such that they add up to a specific target.
+
+     You may assume that each input would have exactly one solution, and you may not use the same element twice.
+
+     Example:
+     Given nums = [2, 7, 11, 15], target = 9,
+
+     Because nums[0] + nums[1] = 2 + 7 = 9,
+     return [0, 1].*/
+    public int[] twoSum(int[] nums, int target) {
+        Map<Integer,Integer> map = new HashMap<>();
+
+        for (int i = 0;i < nums.length; i++) {
+            Integer mapval = map.get(target - nums[i]);
+            if (mapval != null) {
+                return new int[]{mapval,i};
+            } else {
+                map.put(nums[i],i);
+            }
+        }
+
+        return new int[]{};
+    }
+
+
+    /**Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+     Example 1:
+
+     11110
+     11010
+     11000
+     00000
+     Answer: 1
+
+     Example 2:
+
+     11000
+     11000
+     00100
+     00011
+     Answer: 3*/
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        int[][] dir = {
+                {0,1},
+                {1,0},
+                {0,-1},
+                {-1,0}
+        };
+
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+            return 0;
+        }
+
+        boolean[][] isVisited = new boolean[grid.length][grid[0].length];
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (isVisited[i][j]) {
+                    continue;
+                }
+                if (grid[i][j] == '1') {
+                    dfsMarkLand(grid,isVisited,i,j,dir);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private void dfsMarkLand(char[][] g,boolean[][] isVisited, int x, int y, int[][] dir) {
+        Deque<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{x,y});
+
+        while (!queue.isEmpty()) {
+            int[] coordinate = queue.pollFirst();
+            for (int[] d : dir) {
+                int nextx = coordinate[0] + d[0];
+                int nexty = coordinate[1] + d[1];
+                if (nextx < 0 || nextx > g.length || nexty < 0 || nexty > g[0].length || g[nextx][nexty] == '0' || isVisited[nextx][nexty]) {
+                    continue;
+                } else {
+                    queue.add(new int[]{nextx,nexty});
+                    isVisited[nextx][nexty] = true;
+                }
+            }
+        }
+    }
+
+
+
+//    public int[] maxSlidingWindow(int[] nums, int k) {
+//
+//    }
+
+
+    /**
+     Data Structure
+     Majority Number III
+     Given an integer array of length L, find all numbers that occur more than 1/K * L times if any exist.
+
+     Assumptions
+
+     The given array is not null or empty
+     K >= 2
+     Examples
+
+     A = {1, 2, 1, 2, 1}, K = 3, return [1, 2]
+     A = {1, 2, 1, 2, 3, 3, 1}, K = 4, return [1, 2, 3]
+     A = {2, 1}, K = 2, return []*/
+
+    public List<Integer> majority(int[] array, int k) {
+        // write your solution here
+        List<Integer> out = new ArrayList<>();
+        Map<Integer,Integer> map = new HashMap<>();
+        double threshold = array.length*1.0 / k;
+
+        for (Integer i : array) {// pick candidate
+                Integer val = map.get(i);
+                if (val == null) {
+                    val = 0;
+                    if(map.size() < k) {
+                        map.put(i,val + 1);
+                    } else {
+                        Set<Integer> keys = new HashSet<>(map.keySet());
+                        for (Integer j : keys) {
+                            Integer count = map.get(j);
+                            if (count <= 1) {
+                                map.remove(j);
+                            } else {
+                                map.put(j, count - 1);
+                            }
+                        }
+                    }
+                }
+                map.put(i,val + 1);
+        }
+
+        Map<Integer,Integer> candidate = new HashMap<>();
+
+        for (Map.Entry<Integer,Integer> entry : map.entrySet()) {
+            candidate.put(entry.getKey(),0);
+        }
+
+        for (Integer i : array) {
+            Integer val = candidate.get(i);
+            if (val != null && val >= 0) {
+                val += 1;
+                if (val > threshold) {
+                    out.add(i);
+                    candidate.put(i,-1);
+                } else {
+                    candidate.put(i, val);
+                }
+            }
+        }
+
+        return Mysort(out);
+    }
+
+    private List<Integer> Mysort(List<Integer> list) {//sort list increasing order
+        int[] arr = new int[list.size()];
+        int index = 0;
+        for (Integer i : list) {
+            arr[index++] = i;
+        }
+        Arrays.sort(arr);
+        List<Integer> out = new ArrayList<>();
+        for (int i : arr) {
+            out.add(i);
+        }
+        return out;
+    }
 }
